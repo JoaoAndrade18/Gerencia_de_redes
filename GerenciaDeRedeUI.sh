@@ -40,7 +40,7 @@ configurar_temporario() {
            --title "Configurar IP e Máscara de forma temporária" \
            --inputbox "Informe o endereço da máscara de rede:" 0 0 "" 2>temp.txt
     MASCARA=$(cat temp.txt)
-    sudo ifconfig "$INTERFACE_NAME" "$ENDERECO_IP" netmask "$MASCARA"
+    ifconfig "$INTERFACE_NAME" "$ENDERECO_IP" netmask "$MASCARA"
     dialog --backtitle "Gerência da Rede" \
            --title "Configurar IP e Máscara de forma temporária" \
            --msgbox "Operação realizada com sucesso!" 0 0
@@ -51,7 +51,7 @@ habilitar_interface() {
            --title "Habilitar Interface de Rede" \
            --inputbox "Informe o nome da interface de rede a ser habilitada:" 0 0 "" 2>temp.txt
     H_REDE=$(cat temp.txt)
-    sudo ifconfig "$H_REDE" up
+    ifconfig "$H_REDE" up
     dialog --backtitle "Gerência da Rede" \
            --title "Habilitar Interface de Rede" \
            --msgbox "Interface $H_REDE habilitada" 0 0
@@ -62,7 +62,7 @@ desabilitar_interface() {
            --title "Desabilitar Interface de Rede" \
            --inputbox "Informe o nome da interface de rede a ser desabilitada:" 0 0 "" 2>temp.txt
     D_REDE=$(cat temp.txt)
-    sudo ifconfig "$D_REDE" down
+    ifconfig "$D_REDE" down
     dialog --backtitle "Gerência da Rede" \
            --title "Desabilitar Interface de Rede" \
            --msgbox "Interface $D_REDE desabilitada" 0 0
@@ -96,9 +96,9 @@ configurar_permanente() {
             EDITOR=$(cat temp.txt)
 
             if [ "$EDITOR" = "1" ]; then
-                sudo vi /etc/network/interfaces
+                vi /etc/network/interfaces
             elif [ "$EDITOR" = "2" ]; then
-                sudo nano /etc/network/interfaces
+                nano /etc/network/interfaces
             else
                 dialog --backtitle "Gerência da Rede" \
                        --title "Configurar as configurações de rede de forma permanente" \
@@ -118,12 +118,13 @@ configurar_permanente() {
                    --inputbox "Informe a máscara de rede desejada:" 0 0 "" 2>temp.txt
             V_MASCARA=$(cat temp.txt)
             FILE="/etc/network/interfaces"
-            sudo bash -c "echo \"# Interface de rede $V_INTERFACE
+            bash -c "echo \"# Interface de rede $V_INTERFACE
 auto $V_INTERFACE
 allow-hotplug $V_INTERFACE
 iface $V_INTERFACE inet static
     address $V_IP
     netmask $V_MASCARA
+
 \" >> \"$FILE\""
             dialog --backtitle "Gerência da Rede" \
                    --title "Configurar as configurações de rede de forma permanente" \
@@ -147,7 +148,7 @@ iface $V_INTERFACE inet static
 obter_dhcp() {
     dialog --backtitle "Gerência da Rede" \
            --title "Obter IP via DHCP" \
-           --msgbox "$(sudo dhclient)" 0 0
+           --msgbox "$(dhclient)" 0 0
 }
 
 tabela_rotas() {
@@ -166,7 +167,7 @@ adicionar_gateway() {
            --inputbox "Informe o gateway desejado:" 0 0 "" 2>temp.txt
     GATEWAY0=$(cat temp.txt)
     GATEWAY="    gateway $GATEWAY0"
-    sudo sed -i "${LINHA}i\\""$GATEWAY" "/etc/network/interfaces"
+    sed -i "${LINHA}i\\""$GATEWAY" "/etc/network/interfaces"
     dialog --backtitle "Gerência da Rede" \
            --title "Adicionar Gateway" \
            --msgbox "Gateway adicionado com sucesso!" 0 0
@@ -177,15 +178,20 @@ deletar_gateway() {
            --title "Deletar Gateway" \
            --inputbox "Informe a linha onde será deletado o gateway (lembrando que essa operação irá apagar a linha informada mesmo que não seja o gateway; o restante será deslocado para cima!):" 0 0 "" 2>temp.txt
     LINHA2=$(cat temp.txt)
-    sudo sed -i "${LINHA2}d" "/etc/network/interfaces"
+    sed -i "${LINHA2}d" "/etc/network/interfaces"
     dialog --backtitle "Gerência da Rede" \
            --title "Deletar Gateway" \
            --msgbox "Gateway removido com sucesso!" 0 0
 }
 
+if [ "$EUID" -ne 0 ]
+  then echo "Por favor, execute como root"
+  exit
+fi
+
 if ! command -v dialog &> /dev/null; then
         echo "--> O pacote dialog não está instalado. Instalando..."
-        sudo apt-get install dialog -y
+        apt-get install dialog -y
 fi
 
 # Loop principal

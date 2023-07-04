@@ -4,9 +4,15 @@ L_SIMBOLOS=("|" "/" "-" "\\")
 INTERVALO=0.2
 T_SIMBOLOS=${#L_SIMBOLOS[@]}
 
+# faça uma verificação se o usuário é root
+if [ "$EUID" -ne 0 ]
+  then echo "Por favor, execute como root"
+  exit
+fi
+
 echo
 echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-echo "		    Gerência da Rede 		               "
+echo "		    	   Gerência da Rede 		               "
 echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 echo 1 – Informações das Interfaces de Rede
 echo 2 – Configurar o IP e a Máscara de forma temporária
@@ -46,17 +52,17 @@ while true; do
 			read ENDERECO_IP
 			echo " - Informe o endereço da mascara de rede: "
 			read MASCARA
-			sudo ifconfig $INTERFACE_NAME $ENDERECO_IP netmask $MASCARA
+			ifconfig $INTERFACE_NAME $ENDERECO_IP netmask $MASCARA
 		;;
 		3)
 			echo " - Informe o nome da interface de rede a ser habilitada:"
 			read H_REDE
-			sudo ifconfig $H_REDE up
+			ifconfig $H_REDE up
 		;;
 		4)
 			echo " - Informe o nome da interface de rede a ser desabilitada:"
 			read D_REDE
-			sudo ifconfig $D_REDE down
+			ifconfig $D_REDE down
 		;;
 	 	5)
 			echo " - Informe seu SO: 1 - Debian, 2 - Ubuntu"
@@ -68,9 +74,9 @@ while true; do
 					echo " - Escolha um editor: 1 - vi, 2 - nano"
 					read EDITOR
 					if [ $EDITOR = "1" ]; then
-						sudo vi /etc/network/interfaces
+						vi /etc/network/interfaces
 					elif [ $EDITOR = "2" ]; then
-						sudo nano /etc/network/interfaces
+						nano /etc/network/interfaces
 					else
 						echo "(｡•́︿•̀｡) Editor invalido!"
 					fi
@@ -82,18 +88,19 @@ while true; do
 					echo " - Informe a mascara de rede desejada: "
 					read V_MASCARA
 					FILE="/etc/network/interfaces"
-					sudo bash -c "echo "#interface de rede $V_INTERFACE
+					bash -c "echo \"# Interface de rede $V_INTERFACE
 auto $V_INTERFACE
 allow-hotplug $V_INTERFACE
 iface $V_INTERFACE inet static
-	address $V_IP
-	netmask $V_MASCARA" >> \"$FILE\""
+    address $V_IP
+    netmask $V_MASCARA
+    \" >> \"$FILE\""
 					echo "operação realizada com sucesso!"
 					echo "Realize a reinicialização da rede para que as alterações tenham efeito!" 
-					echo Use o comando a seguir caso esteja no debian: sudo systemctl restart networking.service
+					echo Use o comando a seguir caso esteja no debian: systemctl restart networking.service
 					echo Caso nao tenha funcionado, reveja o arquivo /etc/network/interfaces e verifique se as informações estão corretas.
 				else
-					echo "(｡•́︿•̀｡) Opcao invalida!"
+					echo "(｡•́︿•̀｡) Opção inválida!"
 				fi
 			elif [ $DISTRO = "2" ]; then
 				echo "Não implementado ainda!"
@@ -102,26 +109,26 @@ iface $V_INTERFACE inet static
 			fi
 		;;
 		6)
-			sudo dhclient
+			dhclient
 		;;
 		7)
 			route
 		;;
 		8)
 			FILE="/etc/network/interfaces"
-			echo " - Informe a linha onde será inserido o geteway, lembrando que as linhas posteriores serão deslocadas para baixo:"
+			echo " - Informe a linha onde será inserido o geteway, lembrando que as linhas posteriores serão deslocadas para baixo e (a linha não pode estar vazia):"
 			read LINHA
 			echo " - Informe o gateway desejado: "
 			read GATEWAY0
-			GATEWAY="        gateway $GATEWAY0"
-			sudo sed -i "${LINHA}i\\""$GATEWAY" "$FILE"
+			GATEWAY="    gateway $GATEWAY0"
+			sed -i "${LINHA}i\\""$GATEWAY" "$FILE"
 		;;
 		9)
 			FILE="/etc/network/interfaces"
 			echo " - Informe a linha onde será deletado o gateway: lembrando que essa operação irá apagar a linha informada mesmo que não seja o gateway:\
  o restante será deslocado para cima!"
 			read LINHA2
-			sudo sed -i "${LINHA2}d" "$FILE"
+			sed -i "${LINHA2}d" "$FILE"
 		;;
 		0)
 			exit
