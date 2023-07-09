@@ -11,7 +11,7 @@
 
 # a seguir esta a função que irá mostrar o menu principal
 menu_principal() {
-    dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \ 
+    dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
            --title "Menu Principal" \
            --menu "Escolha uma opção:" 0 0 0 \
            1 "Informações das Interfaces de Rede" \
@@ -32,7 +32,7 @@ informacoes_interfaces() {
     ifconfig -a >temp.txt
     dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
            --title "Informações das Interfaces de Rede" \
-           --textbox ./temp.txt \ 
+           --textbox ./temp.txt \
            0 0
 }
 
@@ -146,7 +146,6 @@ allow-hotplug $V_INTERFACE
 iface $V_INTERFACE inet static
     address $V_IP
     netmask $V_MASCARA
-
 \" >> \"$FILE\""
             dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
                    --title "Configurar as configurações de rede de forma permanente" \
@@ -182,7 +181,6 @@ iface $V_INTERFACE inet static
 auto $V_INTERFACE
 allow-hotplug $V_INTERFACE
 iface $V_INTERFACE inet dhcp
-
 \" >> \"$FILE\""
             dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
                    --title "Configurar as configurações de rede de forma permanente" \
