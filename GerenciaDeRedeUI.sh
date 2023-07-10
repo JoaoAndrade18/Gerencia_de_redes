@@ -254,7 +254,7 @@ adicionar_gateway() {
     sed -i "${LINHA}i\\""$GATEWAY" "/etc/network/interfaces" # insere o gateway na linha informada
     dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
            --title "Adicionar Gateway" \
-           --msgbox "Gateway adicionado com sucesso!" 0 0
+           --msgbox "Gateway adicionado com sucesso!, reinicie a rede." 0 0
 }
 
 # função para deletar um gateway no arquivo interfaces 
@@ -266,10 +266,10 @@ deletar_gateway() {
     sed -i "${LINHA2}d" "/etc/network/interfaces" # deleta a linha informada
     dialog --backtitle "Gerência da Rede | © JoaoAndrade18 2023" \
            --title "Deletar Gateway" \
-           --msgbox "Gateway removido com sucesso!" 0 0
+           --msgbox "Gateway removido com sucesso!, reinicie a rede." 0 0
 }
 
-# função para o menu principal
+# Verifica se o usuário é root
 if [ "$EUID" -ne 0 ]
   then echo "Por favor, execute como root"
   exit
