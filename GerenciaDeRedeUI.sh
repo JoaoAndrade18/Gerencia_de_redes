@@ -6,8 +6,7 @@
 
 # O código foi feito para ser executado no Debian
 
-# Para executar o código, basta digitar o comando "sudo bash Geren_Rede.sh" no terminal, ou "sudo ./Geren_Rede.sh" \
-# caso o arquivo esteja com permissão de execução, ou somente "./Geren_Rede.sh" caso o arquivo esteja com permissão de execução e o usuário esteja como root  
+# "bash ./Geren_Rede.sh "caso o arquivo não esteja com permissão de execução, ou somente "./Geren_Rede.sh" caso o arquivo esteja com permissão de execução  
 
 # a seguir esta a função que irá mostrar o menu principal
 menu_principal() {
@@ -280,6 +279,11 @@ fi
 if ! command -v dialog &> /dev/null; then
         echo "--> O pacote dialog não está instalado. Instalando..."
         apt-get install dialog -y
+fi
+# Verifica se o net-tools está instalado
+if ! command -v netstat &> /dev/null; then
+        echo "--> O pacote net-tools não está instalado. Instalando..."
+        apt-get install net-tools -y
 fi
 
 # Loop principal
